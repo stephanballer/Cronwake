@@ -1,2 +1,2 @@
 # Cronwake
-Remote control for Crontab via SSH to generate alarm clock entries
+Android remote control app using Crontab and SSH to generate alarm clock entries on a remote server
