@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.jalopi.cronwake.ScrollingActivity">
+    <item
+        android:id="@+id/action_upload"
+        android:icon="@drawable/ic_baseline_arrow_upward_24"
+        android:orderInCategory="100"
+        android:title="@string/action_upload"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_download"
+        android:icon="@drawable/ic_baseline_arrow_downward_24"
+        android:orderInCategory="100"
+        android:title="@string/action_download"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:title="@string/action_settings" />
+</menu>

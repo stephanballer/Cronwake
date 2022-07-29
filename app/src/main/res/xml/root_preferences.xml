@@ -1,0 +1,58 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/connection_header">
+
+        <EditTextPreference
+            android:defaultValue="192.168.178.25"
+            android:key="@string/host"
+            android:selectAllOnFocus="true"
+            android:title="@string/host"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="22"
+            android:key="@string/port"
+            android:selectAllOnFocus="true"
+            android:title="@string/port"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:defaultValue="pi"
+            android:key="@string/user"
+            android:selectAllOnFocus="true"
+            android:title="@string/user"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:defaultValue="raspberry"
+            android:key="@string/password"
+            android:selectAllOnFocus="true"
+            android:title="@string/password"
+            app:useSimpleSummaryProvider="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/other_header">
+
+        <EditTextPreference
+            android:defaultValue="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            android:key="@string/barcode"
+            android:selectAllOnFocus="true"
+            android:title="@string/barcode"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:defaultValue="/home/pi/alarm.sh"
+            android:key="@string/exec_command"
+            android:selectAllOnFocus="true"
+            android:title="@string/exec_command"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:defaultValue="pkill ffplay"
+            android:key="@string/stop_command"
+            android:selectAllOnFocus="true"
+            android:title="@string/stop_command"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
