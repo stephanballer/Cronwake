@@ -1,9 +1,11 @@
 package com.jalopi.cronwake;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
@@ -13,6 +15,7 @@ import android.view.View;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
@@ -27,14 +30,10 @@ import com.journeyapps.barcodescanner.ScanIntentResult;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScrollingActivity extends AppCompatActivity {
-
-    private ActivityScrollingBinding binding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +46,7 @@ public class ScrollingActivity extends AppCompatActivity {
             StrictMode.setThreadPolicy(policy);
         }
 
+        ActivityScrollingBinding binding;
         binding = ActivityScrollingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -127,7 +127,8 @@ public class ScrollingActivity extends AppCompatActivity {
         //alarms.add(new AlarmData("1", 12, 4, days));
         //alarms.add(new AlarmData("2", 12, 4, days));
 
-        List<AlarmData> alarms = AlarmData.readFromFile(this);
+        List<AlarmData> alarms = new ArrayList<>();
+        AlarmData.readFromFile(this, alarms);
 
         RecyclerView mainListView = findViewById(R.id.mainListView);
         MyAdapter adapter = new MyAdapter(alarms);
@@ -145,7 +146,7 @@ public class ScrollingActivity extends AppCompatActivity {
                 adapter.getAlarms().remove(viewHolder.getAdapterPosition());
                 adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
 
-                AlarmData.writeToFile(MyAdapter.adapter.getAlarms(), ScrollingActivity.this);
+                AlarmData.writeToFile(System.currentTimeMillis(), MyAdapter.adapter.getAlarms(), ScrollingActivity.this);
             }
         });
 
@@ -160,6 +161,8 @@ public class ScrollingActivity extends AppCompatActivity {
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @SuppressLint("ScheduleExactAlarm")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -172,7 +175,7 @@ public class ScrollingActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-        else if (id == R.id.action_upload || id == R.id.action_download) {
+        else if (id == R.id.action_sync) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ScrollingActivity.this);
             AlertDialog.Builder builder = new AlertDialog.Builder(ScrollingActivity.this);
             String user = prefs.getString(getString(R.string.user), "pi");
@@ -182,15 +185,21 @@ public class ScrollingActivity extends AppCompatActivity {
             int port = Integer.parseInt(prefs.getString(getString(R.string.port), "22"));
             builder.setMessage(user + "@" + host + ":" + port);
             try {
-                if (id == R.id.action_upload) {
-                    AlarmData.sendAlarms(MyAdapter.adapter.getAlarms(), host, port, user, password, command);
+                List<AlarmData> localAlarms = new ArrayList<>();
+                List<AlarmData> remoteAlarms = new ArrayList<>();
+                long localTimeWritten = AlarmData.readFromFile(this, localAlarms);
+                long remoteTimeWritten = AlarmData.receiveAlarms(remoteAlarms, host, port, user, password);
+                if (localTimeWritten > remoteTimeWritten) {
+                    AlarmData.sendAlarms(localTimeWritten, localAlarms, host, port, user, password, command);
                 }
                 else {
-                    AlarmData.getAlarms(host, port, user, password);
+                    MyAdapter.adapter.getAlarms().clear();
+                    MyAdapter.adapter.getAlarms().addAll(remoteAlarms);
                     MyAdapter.adapter.notifyDataSetChanged();
-                    AlarmData.writeToFile(MyAdapter.adapter.getAlarms(), this);
+                    AlarmData.writeToFile(remoteTimeWritten,  remoteAlarms, this);
                 }
                 builder.setTitle("Sync successful");
+
             } catch (JSchException | IOException e) {
                 e.printStackTrace();
                 builder.setTitle("Sync failed");

@@ -47,7 +47,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     alarms.get(getAdapterPosition()).setActivated(b);
 
-                    AlarmData.writeToFile(adapter.getAlarms(), view.getContext());
+                    AlarmData.writeToFile(System.currentTimeMillis(), adapter.getAlarms(), view.getContext());
                 }
             });
         }

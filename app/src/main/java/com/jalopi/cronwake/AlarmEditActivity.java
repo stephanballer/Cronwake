@@ -4,7 +4,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -92,7 +91,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                 else {
                     adapter.notifyItemInserted(alarmIndex);
                 }
-                AlarmData.writeToFile(MyAdapter.adapter.getAlarms(), view.getContext());
+                AlarmData.writeToFile(System.currentTimeMillis(), MyAdapter.adapter.getAlarms(), view.getContext());
 
                 finish();
             }
@@ -103,7 +102,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                 MyAdapter adapter = MyAdapter.adapter;
                 adapter.getAlarms().remove(adapter.getAlarmIndex());
                 adapter.notifyItemRemoved(adapter.getAlarmIndex());
-                AlarmData.writeToFile(MyAdapter.adapter.getAlarms(), view.getContext());
+                AlarmData.writeToFile(System.currentTimeMillis(), MyAdapter.adapter.getAlarms(), view.getContext());
 
                 finish();
             }

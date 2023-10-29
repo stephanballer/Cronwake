@@ -26,10 +26,10 @@
         <EditTextPreference
             android:defaultValue="raspberry"
             android:key="@string/password"
+            android:inputType="textPassword"
             android:selectAllOnFocus="true"
             android:title="@string/password"
             app:useSimpleSummaryProvider="false" />
-
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/other_header">

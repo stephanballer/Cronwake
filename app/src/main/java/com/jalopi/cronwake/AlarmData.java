@@ -12,9 +12,7 @@ import com.jcraft.jsch.Session;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.io.OutputStreamWriter; import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class AlarmData {
@@ -31,9 +29,11 @@ public class AlarmData {
         this.minute = minute;
         this.days = days;
     }
-    public static void writeToFile(List<AlarmData> alarms, Context context) {
+
+    public static void writeToFile(long timeWritten, List<AlarmData> alarms, Context context) {
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("alarms.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write("#" + timeWritten + "\n");
             for (AlarmData alarm : alarms) {
                 outputStreamWriter.write(alarm.toString() + "\n");
                 //System.out.println(alarm);
@@ -41,14 +41,20 @@ public class AlarmData {
             outputStreamWriter.close();
         }
         catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
+            Log.e("Exception", "File write failed: " + e);
         }
     }
-    public static List readFromFile(Context context) {
-        List<AlarmData> alarms = new ArrayList<>();
+    public static long readFromFile(Context context, List<AlarmData> alarms) {
+        long timeWritten = 0;
+
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(context.openFileInput("alarms.txt")));
             String line;
+
+            if ((line = bufferedReader.readLine()) != null) try {
+                timeWritten = Long.parseLong(line.substring(1, line.length()));
+            }
+            catch (Exception e) {}
             while ((line = bufferedReader.readLine()) != null) {
                 //System.out.println("\"" + line + "\"");
                 AlarmData alarm = parseAlarmData(line);
@@ -61,9 +67,11 @@ public class AlarmData {
         catch (IOException e) {
             Log.e("Exception", "File read failed: " + e.toString());
         }
-        return alarms;
+
+        return timeWritten;
     }
-    public static void sendAlarms(List<AlarmData> alarms, String host, int port, String user, String password, String command) throws JSchException, IOException {
+
+    public static void sendAlarms(long timeWritten, List<AlarmData> alarms, String host, int port, String user, String password, String command) throws JSchException, IOException {
         JSch jsch = new JSch();
         Session session = jsch.getSession(user, host, port);
         session.setPassword(password);
@@ -73,7 +81,7 @@ public class AlarmData {
 
         Channel channel = session.openChannel("exec");
         //OutputStream outputStream = channel.getOutputStream();
-        String alarms_str = "";
+        String alarms_str = "#" + timeWritten + "\n";
         for (AlarmData alarm : alarms) {
             String alarm_str = alarm.toString().replace("$", command) + "\n";
             alarms_str += alarm_str;
@@ -87,7 +95,7 @@ public class AlarmData {
         session.disconnect();
     }
 
-    public static void getAlarms(String host, int port, String user, String password) throws JSchException, IOException {
+    public static long receiveAlarms(List<AlarmData> alarms, String host, int port, String user, String password) throws JSchException, IOException {
         JSch jsch = new JSch();
         Session session = jsch.getSession(user, host, port);
         session.setPassword(password);
@@ -99,19 +107,25 @@ public class AlarmData {
         ((ChannelExec)channel).setCommand("crontab -l");
         channel.connect();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(channel.getInputStream()));
-        MyAdapter.adapter.getAlarms().clear();
         String line;
+        long timeWritten = 0;
+        AlarmData newAlarm;
+
+        if ((line = bufferedReader.readLine()) != null) try {
+            timeWritten = Long.parseLong(line.substring(1, line.length()));
+        }
+        catch (Exception e) {}
         while ((line = bufferedReader.readLine()) != null) {
-            AlarmData newAlarm = AlarmData.parseAlarmData(line);
+            newAlarm = AlarmData.parseAlarmData(line);
             if (newAlarm != null) {
-                MyAdapter.adapter.getAlarms().add(newAlarm);
-            }
-            else {
-                break;
+                alarms.add(newAlarm);
             }
         }
+
         channel.disconnect();
         session.disconnect();
+
+        return timeWritten;
     }
 
     public static void stopAlarm(String host, int port, String user, String password, String stopCommand) throws JSchException {
@@ -205,6 +219,7 @@ public class AlarmData {
 
         return true;
     }
+
     public static AlarmData parseAlarmData(String s) {
         AlarmData alarm = new AlarmData();
         if (alarm.fromString(s)) {
