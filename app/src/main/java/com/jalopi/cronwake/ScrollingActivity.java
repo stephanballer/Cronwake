@@ -50,9 +50,9 @@ public class ScrollingActivity extends AppCompatActivity {
         binding = ActivityScrollingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Toolbar toolbar = binding.toolbar;
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        //Toolbar toolbar = binding.toolbar;
+        //setSupportActionBar(toolbar);
+        //toolbar.setTitle(getTitle());
 
         findViewById(R.id.addAlarmButton).setOnClickListener(new View.OnClickListener() {
             @Override

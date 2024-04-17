@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
@@ -20,12 +21,12 @@
         <entry key="app/src/main/res/layout/content_scrolling.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_first.xml" value="0.15196623871291895" />
         <entry key="app/src/main/res/layout/fragment_second.xml" value="0.10914855072463768" />
-        <entry key="app/src/main/res/layout/list_element.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/list_element.xml" value="0.33468780517578123" />
         <entry key="app/src/main/res/layout/preference_dialog.xml" value="0.14270833333333333" />
         <entry key="app/src/main/res/layout/settings_activity.xml" value="0.21" />
         <entry key="app/src/main/res/layout/zxing_capture.xml" value="0.134375" />
         <entry key="app/src/main/res/menu/menu_scrolling (conflicted copy 2022-07-25 063322).xml" value="0.17291666666666666" />
-        <entry key="app/src/main/res/menu/menu_scrolling.xml" value="0.1390625" />
+        <entry key="app/src/main/res/menu/menu_scrolling.xml" value="0.30763092041015627" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1525" />
         <entry key="app/src/main/res/xml/root_preferences.xml" value="0.2991845614668252" />
       </map>

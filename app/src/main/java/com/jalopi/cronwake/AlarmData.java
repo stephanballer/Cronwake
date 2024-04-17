@@ -1,5 +1,7 @@
 package com.jalopi.cronwake;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.util.Log;
 
